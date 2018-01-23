@@ -6,7 +6,7 @@
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/15 15:34:43 by lolivet           #+#    #+#             */
-/*   Updated: 2018/01/15 18:08:53 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/01/23 16:52:15 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,34 @@ int		get_next_line(const int fd, char **line)
 {
 	int				ret;
 	int				i;
-	char			buf[BUFF_SIZE];
+	char			buf[BUFF_SIZE + 1];
 	static t_list	*lst;
-	t_gnl			*new;
-	char			*rest;
+	t_list			*new;
 
 	i = 0;
-	if (!(lst = (t_list *)malloc(sizeof(t_list))) &&
-		/*	!(lst->content = (t_gnl *)malloc(sizeof(t_gnl))) && */
-			!(new = (t_gnl *)malloc(sizeof(t_gnl))) &&
-			!(new->rest = (char *)malloc(sizeof(char) * (10 + 1))))
-
-		return (0);
+	if (!(lst))
+	{
+		if (!(lst = ft_lstnew(ft_memalloc(sizeof(t_gnl)), sizeof(t_gnl*))))
+			return (-1);
+	}
+	if (((t_gnl*)(lst->content))->rest && ft_strchr(((t_gnl*)(lst->content))->rest, '\n'))
+	{
+		while (((t_gnl*)(lst->content))->rest[i])
+		{
+			if (((t_gnl*)(lst->content))->rest[i] == '\n')
+			{
+				((t_gnl*)(lst->content))->rest[i] = '\0';
+				*line = *line ? ft_strjoin(*line, ((t_gnl*)(lst->content))->rest) : ft_strdup(((t_gnl*)(lst->content))->rest);
+				break;
+			}
+			i++;
+		}
+		((t_gnl*)(lst->content))->rest = ft_strdup(((t_gnl*)(lst->content))->rest + i + 1);
+		return (1);
+	}
+	else
+		*line = *line ? ft_strjoin(*line, ((t_gnl*)(lst->content))->rest) : ((t_gnl*)(lst->content))->rest ? ft_strdup(((t_gnl*)(lst->content))->rest) : NULL;
+	new = ft_lstnew(ft_memalloc(sizeof(t_gnl)), sizeof(t_gnl*));
 	while ((ret = read(fd, buf, BUFF_SIZE)))
 	{
 		buf[ret] = '\0';
@@ -49,14 +65,9 @@ int		get_next_line(const int fd, char **line)
 		}
 		*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
 	}
-	ft_putstr(*line);
-// Mettre dans les bons maillons dans le list -----------
-//	((t_gnl *)lst->content)->rest = buf + i + 1;
-	new->rest = buf + i + 1;
-	lst->content = buf + i + 1;
-	ft_putchar('\n');
-	ft_putstr(new->rest);
-//	ft_putstr(((t_gnl *)lst->content)->rest);
+ 	((t_gnl*)(new->content))->rest = ft_strdup(buf + i + 1);
+	((t_gnl*)(new->content))->fd = fd;
+	ft_lstadd(&lst, new);
 	return (0);
 }
 
@@ -73,6 +84,12 @@ int		main(int argc, char **argv)
 		return (-1);
 	}
 	get_next_line(fd, &line);
-//	printf("je suis la line #%s#\n", line);
+	printf("je suis la line #%s#\n", line);
 	ft_strdel(&line);
+	get_next_line(fd, &line);
+	printf("je suis la line #%s#\n", line);
+	ft_strdel(&line);
+	get_next_line(fd, &line);
+	printf("je suis la line #%s#\n", line);
 }
+
