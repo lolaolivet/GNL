@@ -6,7 +6,7 @@
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/09 11:21:03 by lolivet           #+#    #+#             */
-/*   Updated: 2018/01/15 18:08:55 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/01/23 19:04:06 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,39 +25,34 @@ int		get_next_line(const int fd, char **line)
 	int				ret;
 	int				i;
 	char			buf[BUFF_SIZE + 1];
-	static t_list	*lst;
-	t_list			*new;
-	char			*reste;
+	static t_gnl	*lst;
 
 	i = 0;
-	if (!(lst = (t_list *)malloc(sizeof(t_list))) &&
-			!(new = (t_list *)malloc(sizeof(t_list))) &&
-			!(new->content = (t_gnl *)malloc(sizeof(t_gnl))) &&
-			!(lst->content = (t_gnl *)malloc(sizeof(t_gnl))) &&
-			!(((t_gnl *)new->content)->rest = (char *)malloc(sizeof(char))))
-		return (0);
-	ft_putstr("coucou je suis le reste\n");
-	ft_putendl(reste);
-//	ft_putendl(((t_gnl *)lst->content)->rest);
-	if (reste && ft_strchr(reste, '\n'))
+	if (!(lst))
 	{
-		while(reste[i])
+		if (!(lst = (t_gnl*)ft_memalloc(sizeof(t_gnl))))
+			return (0);
+	}	
+	ft_putstr("coucou je suis le reste\n");
+	ft_putendl(lst->rest);
+	//	ft_putendl(((t_gnl *)lst->content)->rest);
+	if (lst->rest && ft_strchr(lst->rest, '\n'))
+	{
+		while(lst->rest[i])
 		{
-			if (reste[i] == '\n')
+			if (lst->rest[i] == '\n')
 			{
-				reste[i] = '\0';
-				*line = *line ? ft_strjoin(*line, reste) : ft_strdup(reste); 
+				lst->rest[i] = '\0';
+				*line = *line ? ft_strjoin(*line, lst->rest) : ft_strdup(lst->rest); 
 				break;
 			}
 			i++;
 		}
-		reste = ft_strdup(reste + i + 1);
+		lst->rest = ft_strdup(lst->rest + i + 1);
 		return (1);	
 	}
 	else
-		*line = *line ? ft_strjoin(*line, reste) : reste ? ft_strdup(reste) : NULL; 
-
-
+		*line = *line ? ft_strjoin(*line, lst->rest) : lst->rest ? ft_strdup(lst->rest) : NULL; 
 	while ((ret = read(fd, buf, BUFF_SIZE)) )
 	{
 		//		si \n
@@ -80,14 +75,10 @@ int		get_next_line(const int fd, char **line)
 			break;
 		}
 		*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
-		ft_putstr("0");
 	}
-
-	//	((t_gnl *)new->content)->rest = ft_strdup(buf + i + 1);
-	//	((t_gnl *)new->content)->fd = fd;
-	//			ft_lstadd(&lst, new);
-	//	ft_putchar('\n');
-	//	ft_putchar('\n');
+	lst->rest = ft_strdup(buf + i + 1);
+	lst->fd = fd;
+//	ft_putstr(lst->rest);
 	return (0);
 }
 
@@ -106,11 +97,9 @@ int		main(int argc, char **argv)
 	get_next_line(fd, &line);
 	printf("je suis la line #%s#\n", line);
 	ft_strdel(&line);
-	/*
-	   get_next_line(fd, &line);
-	   printf("je suis la line #%s#\n", line);
-	   ft_strdel(&line);
-	   get_next_line(fd, &line);
-	   printf("je suis la line #%s#\n", line);
-	   */
+	get_next_line(fd, &line);
+	printf("je suis la line #%s#\n", line);
+	ft_strdel(&line);
+	get_next_line(fd, &line);
+	printf("je suis la line #%s#\n", line);
 }
