@@ -6,13 +6,31 @@
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/15 15:34:43 by lolivet           #+#    #+#             */
-/*   Updated: 2018/01/23 19:04:04 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/01/24 19:05:50 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "./libft/libft.h"
 #include <stdio.h>
+
+void	fill_rest(t_list *lst, char **line, int i)
+{
+	while (((t_gnl*)(lst->content))->rest[i])
+	{
+		if (((t_gnl*)(lst->content))->rest[i] == '\n')
+		{
+			((t_gnl*)(lst->content))->rest[i] = '\0';
+			*line = *line ?
+				ft_strjoin(*line, ((t_gnl*)(lst->content))->rest) :
+				ft_strdup(((t_gnl*)(lst->content))->rest);
+			break ;
+		}
+		i++;
+	}
+	((t_gnl*)(lst->content))->rest =
+		ft_strdup(((t_gnl*)(lst->content))->rest + i + 1);
+}
 
 int		check_rest(t_list *lst, char **line, int i)
 {
@@ -24,24 +42,27 @@ int		check_rest(t_list *lst, char **line, int i)
 	if (((t_gnl*)(lst->content))->rest &&
 			ft_strchr(((t_gnl*)(lst->content))->rest, '\n'))
 	{
-		while (((t_gnl*)(lst->content))->rest[i])
-		{
-			if (((t_gnl*)(lst->content))->rest[i] == '\n')
-			{
-				((t_gnl*)(lst->content))->rest[i] = '\0';
-				*line = *line ? ft_strjoin(*line, ((t_gnl*)(lst->content))->rest) :
-					ft_strdup(((t_gnl*)(lst->content))->rest);
-				break ;
-			}
-			i++;
-		}
-		((t_gnl*)(lst->content))->rest = ft_strdup(((t_gnl*)(lst->content))->rest + i + 1);
+		fill_rest(lst, line, 0);
 		return (1);
-
-		*line = *line ? ft_strjoin(*line, ((t_gnl*)(lst->content))->rest) :
-			((t_gnl*)(lst->content))->rest ?
-			ft_strdup(((t_gnl*)(lst->content))->rest) : NULL;
-	return (0);
+	}
+	else
+	{
+		if (*line)
+		{
+			*line = ft_strjoin(*line, ((t_gnl*)(lst->content))->rest);
+			return (1);
+		}
+		else
+		{
+			if (((t_gnl*)(lst->content))->rest)
+			{
+				*line = ft_strdup(((t_gnl*)(lst->content))->rest);
+				return (1);
+			}
+			else
+				return (0);
+		}
+	}
 }
 
 void	read_file(t_list *lst, t_list *new, char **line, int fd)
@@ -70,8 +91,8 @@ void	read_file(t_list *lst, t_list *new, char **line, int fd)
 		}
 		*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
 	}
-	((t_gnl*)(new->content))->rest = ft_strdup(buf + i + 1);
-	((t_gnl*)(new->content))->fd = fd;
+	if (ret != 0)
+		((t_gnl*)(new->content))->rest = ft_strdup(buf + i + 1);
 }
 
 int		get_next_line(const int fd, char **line)
@@ -81,7 +102,8 @@ int		get_next_line(const int fd, char **line)
 
 	check_rest(lst, line, 0);
 	new = ft_lstnew(ft_memalloc(sizeof(t_gnl)), sizeof(t_gnl*));
-	read_file(lst, new, line, fd, 0);
+	read_file(lst, new, line, fd);
+	((t_gnl*)(new->content))->fd = fd;
 	ft_lstadd(&lst, new);
 	return (0);
 }
@@ -99,12 +121,13 @@ int		main(int argc, char **argv)
 		ft_putendl("ERROR");
 		return (-1);
 	}
-	get_next_line(fd, &line);
+	printf("%d", get_next_line(fd, &line));
 	printf("je suis la line #%s#\n", line);
 	ft_strdel(&line);
-	get_next_line(fd, &line);
+	printf("%d", get_next_line(fd, &line));
 	printf("je suis la line #%s#\n", line);
 	ft_strdel(&line);
-	get_next_line(fd, &line);
+	printf("%d", get_next_line(fd, &line));
 	printf("je suis la line #%s#\n", line);
+	ft_strdel(&line);
 }
