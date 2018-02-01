@@ -6,7 +6,7 @@
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/28 14:49:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/01 16:46:27 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/02/01 19:13:02 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ int		check_rest(t_list **lst, char **line)
 		if (REST)
 		{
 			*line = ft_strdup(REST);
-			ft_strdel(&REST);
 			return (1);
 		}
 		else
@@ -126,8 +125,8 @@ int		get_next_line(const int fd, char **line)
 			|| !(new = ft_lstnew(ft_memalloc(sizeof(t_gnl)), sizeof(t_gnl*)))
 			|| (return_read = read_file(new, line, fd, 0)) == -1)
 		return (-1);
-	if (return_read == 1 || ((return_read == 0 && return_check == 1) &&
-				ft_strlen(*line)))
+	if (return_read == 1 || ((return_read == 0 && return_check == 1)
+				&& ft_strlen(*line)))
 	{
 		ft_lstadd(&lst, new);
 		return (1);
