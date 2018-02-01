@@ -6,7 +6,7 @@
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/28 14:49:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/01/30 19:56:10 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/02/01 14:19:11 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,13 @@ int		check_rest(t_list **lst, char **line)
 int		read_file(t_list *new, char **line, int fd, int i)
 {
 	int				ret;
+	int				jelu;
 	char			buf[BUFF_SIZE + 1];
 
+	jelu = 0;
 	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
 	{
+		jelu = 1;
 		buf[ret] = '\0';
 		if (ft_strchr(buf, '\n'))
 		{
@@ -78,20 +81,19 @@ int		read_file(t_list *new, char **line, int fd, int i)
 				}
 			break ;
 		}
-//		else
-//		{
-//			((t_gnl*)(new->content))->rest = ft_strdup(buf + i);
-//			((t_gnl*)(new->content))->fd = fd;
-			
 		*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
 	}
-	printf("ret read: %d\n", ret);
-	printf("buf: %s\n", buf);
-	printf("line read: %s\n", *line);
-	if (ret > 0)
+	if (ret < 0)
+		return (-1);
+	else if (ret > 0)
 	{
-		ft_putstr("RET");
 		((t_gnl*)(new->content))->rest = ft_strdup(buf + i);
+		((t_gnl*)(new->content))->fd = fd;
+		return (1);
+	}
+	else if (jelu)
+	{
+		((t_gnl*)(new->content))->rest = NULL;
 		((t_gnl*)(new->content))->fd = fd;
 		return (1);
 	}
@@ -107,37 +109,27 @@ int		get_next_line(const int fd, char **line)
 	int				return_read;
 
 	new = NULL;
-	*line = NULL;
+	if (line)
+		*line = NULL;
 	if ((return_check = check_rest(&lst, line)) == 2)
 		return (1);
-	if (return_check == -1
+	if (return_check == -1 || fd < 0
 			|| !(new = ft_lstnew(ft_memalloc(sizeof(t_gnl)), sizeof(t_gnl*))))
 		return (-1);
-	printf("return_check: %d\n", return_check);
 	if ((return_read = read_file(new, line, fd, 0)) == 1)
 	{
-		printf("return_read: %d\n", return_read);
-		ft_putstr("line1:");
-		ft_putstr(*line);
-		ft_putstr("\n");
 		ft_lstadd(&lst, new);
 		return (1);
 	}
-	if ((return_read  == 0 && return_check == 1) && ft_strlen(*line))
+	if (return_read == -1)
+		return (-1);
+	if ((return_read == 0 && return_check == 1) && ft_strlen(*line))
 	{
-		printf("return_read: %d\n", return_read);
-		ft_putstr("line2:");
-		ft_putstr(*line);
-		ft_putstr("\n");
 		ft_lstadd(&lst, new);
 		return (1);
 	}
 	else if (return_check == 0 && return_read == 0)
 	{
-		printf("return_read: %d\n", return_read);
-		ft_putstr("line3:");
-		ft_putstr(*line);
-		ft_putstr("\n");
 		ft_strdel(line);
 		return (0);
 	}
