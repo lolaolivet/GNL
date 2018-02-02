@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/28 14:49:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/01 19:13:02 by lolivet          ###   ########.fr       */
+/*   Created: 2018/02/02 10:28:54 by lolivet           #+#    #+#             */
+/*   Updated: 2018/02/02 20:04:39 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,80 +14,90 @@
 #include "./libft/libft.h"
 #include <stdio.h>
 
-void	fill_rest(t_list **lst, char **ln, int i)
+void	fill_rest(char **rest, char **ln, int i)
 {
-	t_list	*tmp;
+	char		*tmp;
+	char		*tnt;
 
-	tmp = *lst;
-	while (((t_gnl*)(tmp->content))->rest[i])
+	tmp = *rest;
+	while (tmp[i])
 	{
-		if (((t_gnl*)(tmp->content))->rest[i] == '\n')
+		if (tmp[i] == '\n')
 		{
-			((t_gnl*)(tmp->content))->rest[i] = '\0';
-			*ln = *ln ? ft_strjoin(*ln, REST) : ft_strdup(REST);
+			tmp[i] = '\0';
+			*ln = *ln ? ft_strjoin(*ln, tmp) : ft_strdup(tmp);
 			break ;
 		}
 		i++;
 	}
-	REST = ft_strdup(((t_gnl*)(tmp->content))->rest + i + 1);
+	tnt = *rest;
+	*rest = ft_strdup(tmp + i + 1);
+	free(tmp);
+	free(tnt);
 }
 
-int		check_rest(t_list **lst, char **line)
+int		check_rest(char **rest, char **line)
 {
-	t_list		*tmp;
+	//char	*tmp;
 
-	tmp = *lst;
-	if (!(*lst))
+	if (!(*rest))
 		return (0);
-	else if (((t_gnl*)(tmp->content)) && REST && ft_strchr(REST, '\n'))
+	else if (*rest && ft_strchr(*rest, '\n'))
 	{
-		fill_rest(lst, line, 0);
+		fill_rest(rest, line, 0);
 		return (2);
 	}
 	else
 	{
-		if (REST)
+		if (*rest)
 		{
-			*line = ft_strdup(REST);
+			*line = ft_strdup(*rest);
+			// Ici 
+		//	free(*rest);
+		//	*rest = ft_strnew(0);
 			return (1);
 		}
 		else
 		{
 			ft_strdel(line);
+			free(*rest);
+			*rest = NULL;
 			return (0);
 		}
 	}
 }
 
-int		check_read(t_list **new, int ret, char *buf, int j)
+int		check_read(char **rest, int ret, char *buf, int j)
 {
-	t_list			*tmp;
-
-	tmp = *new;
 	if (ret < 0)
+	{
+		free(*rest);
 		return (-1);
+	}
 	else if (ret > 0)
 	{
-		REST = ft_strdup(buf);
+		*rest = ft_strdup(buf);
 		return (1);
 	}
 	else if (j)
-	{
-		REST = NULL;
 		return (1);
-	}
 	else
+	{
+		*rest = NULL;
 		return (0);
+	}
 }
 
-int		read_file(t_list *new, char **line, int fd, int i)
+int		read_file(char **rest, char **line, int fd, int i)
 {
-	int				ret;
-	int				j;
-	char			buf[BUFF_SIZE + 1];
-	int				return_read;
+	int			ret;
+	int			j;
+	char		buf[BUFF_SIZE + 1];
+	int			return_read;
+	char		*tmp;
 
 	j = 0;
+	tmp = NULL;
 	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
 	{
 		j = 1;
@@ -97,43 +107,59 @@ int		read_file(t_list *new, char **line, int fd, int i)
 			while (buf[i])
 				if (buf[i++] == '\n' && ((buf[i - 1] = '\0') + 1))
 				{
-					*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
+					/*
+					if (*line)
+						tmp = ft_strjoin(*line, buf);
+					else
+						*line = ft_strdup(buf);
+						*/
+					tmp = *line;
+					*line = *line  ? ft_strjoin(*line, buf) : ft_strdup(buf);
+//					ft_putendl(*line);
+					free(tmp);
 					break ;
 				}
 			break ;
 		}
+		tmp = *line;
 		*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
+		free(tmp);
 	}
-	((t_gnl*)(new->content))->fd = fd;
-	return_read = check_read(&new, ret, buf + i, j);
+	return_read = check_read(rest, ret, buf + i, j);
 	return (return_read);
 }
 
 int		get_next_line(const int fd, char **line)
 {
-	static t_list	*lst = NULL;
-	t_list			*new;
-	int				return_check;
-	int				return_read;
+	static char	*rest = NULL;
+	int			check;
+	int			read;
 
-	new = NULL;
 	if (line)
 		*line = NULL;
-	if ((return_check = check_rest(&lst, line)) == 2)
+	if ((check = check_rest(&rest, line)) == 2)
 		return (1);
-	if (return_check == -1 || fd < 0
-			|| !(new = ft_lstnew(ft_memalloc(sizeof(t_gnl)), sizeof(t_gnl*)))
-			|| (return_read = read_file(new, line, fd, 0)) == -1)
-		return (-1);
-	if (return_read == 1 || ((return_read == 0 && return_check == 1)
-				&& ft_strlen(*line)))
+	if (check == -1 || fd < 0 || (read = read_file(&rest, line, fd, 0)) == -1)
 	{
-		ft_lstadd(&lst, new);
+		ft_strdel(line);
+		free(rest);
+		return (-1);
+	}
+	if (read == 1 || ((read == 0 && check == 1) && ft_strlen(*line)))
+	{
+// Pas de fautes dans FileCheck mais 354 leaks, 1 byte avec valgrind,
+//  0 leaks avec while(1)
+//		if (read == 0)
+//			free(rest);
+// 
+//		if (read == 0 || check == 0)
+//			free(rest);
 		return (1);
 	}
 	else
 	{
 		ft_strdel(line);
+		free(rest);
 		return (0);
 	}
 }
