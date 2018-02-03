@@ -6,7 +6,7 @@
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/02 10:28:54 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/02 20:04:39 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/02/03 14:41:28 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void	fill_rest(char **rest, char **ln, int i)
 {
 	char		*tmp;
-	char		*tnt;
+//	char		*tnt;
 
 	tmp = *rest;
 	while (tmp[i])
@@ -30,15 +30,16 @@ void	fill_rest(char **rest, char **ln, int i)
 		}
 		i++;
 	}
-	tnt = *rest;
+// 19 fautes de moins
+//	tnt = *rest;
 	*rest = ft_strdup(tmp + i + 1);
-	free(tmp);
-	free(tnt);
+//	free(tmp);
+//	free(tnt);
 }
 
 int		check_rest(char **rest, char **line)
 {
-	//char	*tmp;
+//	char	*tmp;
 
 	if (!(*rest))
 		return (0);
@@ -53,7 +54,8 @@ int		check_rest(char **rest, char **line)
 		{
 			*line = ft_strdup(*rest);
 			// Ici 
-		//	free(*rest);
+			free(*rest);
+			*rest = NULL;
 		//	*rest = ft_strnew(0);
 			return (1);
 		}
@@ -83,6 +85,7 @@ int		check_read(char **rest, int ret, char *buf, int j)
 		return (1);
 	else
 	{
+		free(*rest);
 		*rest = NULL;
 		return (0);
 	}
@@ -107,15 +110,8 @@ int		read_file(char **rest, char **line, int fd, int i)
 			while (buf[i])
 				if (buf[i++] == '\n' && ((buf[i - 1] = '\0') + 1))
 				{
-					/*
-					if (*line)
-						tmp = ft_strjoin(*line, buf);
-					else
-						*line = ft_strdup(buf);
-						*/
 					tmp = *line;
 					*line = *line  ? ft_strjoin(*line, buf) : ft_strdup(buf);
-//					ft_putendl(*line);
 					free(tmp);
 					break ;
 				}
@@ -150,9 +146,6 @@ int		get_next_line(const int fd, char **line)
 // Pas de fautes dans FileCheck mais 354 leaks, 1 byte avec valgrind,
 //  0 leaks avec while(1)
 //		if (read == 0)
-//			free(rest);
-// 
-//		if (read == 0 || check == 0)
 //			free(rest);
 		return (1);
 	}
