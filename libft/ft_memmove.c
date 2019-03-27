@@ -1,31 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/16 09:10:27 by lolivet           #+#    #+#             */
+/*   Updated: 2017/12/01 08:07:25 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+void	*ft_memmove(void *dst, const void *src, size_t len)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	size_t			i;
+	size_t			j;
+	unsigned char	*d;
+	unsigned char	*s;
 
-int				get_next_line(const int fd, char **line);
-
-#endif
+	i = 0;
+	j = len;
+	d = (unsigned char*)dst;
+	s = (unsigned char*)src;
+	if (len == 0)
+		return (d);
+	if (s < d)
+	{
+		while (len--)
+			d[len] = s[len];
+	}
+	else
+	{
+		ft_memcpy(d, s, len);
+	}
+	return (d);
+}

@@ -1,31 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/23 12:50:11 by lolivet           #+#    #+#             */
+/*   Updated: 2017/12/01 11:27:18 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+void	ft_putnbr_fd(int n, int fd)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	int		res;
+	int		modulo;
+	char	a;
 
-int				get_next_line(const int fd, char **line);
-
-#endif
+	if (n == -2147483648)
+	{
+		n = 147483648;
+		a = '-';
+		write(fd, &a, 1);
+		a = '2';
+		write(fd, &a, 1);
+	}
+	if (n < 0)
+	{
+		n = -n;
+		a = '-';
+		write(fd, &a, 1);
+	}
+	modulo = (n % 10);
+	res = (n / 10);
+	if (res != 0)
+		ft_putnbr_fd(res, fd);
+	a = modulo + '0';
+	write(fd, &a, 1);
+}

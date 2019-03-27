@@ -1,31 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_memccpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/16 15:07:43 by lolivet           #+#    #+#             */
+/*   Updated: 2017/11/22 08:31:57 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+void	*ft_memccpy(void *dst, const void *src, int c, size_t n)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	unsigned char	*d;
+	unsigned char	*s;
+	unsigned char	i;
+	unsigned char	a;
+	unsigned char	y;
 
-int				get_next_line(const int fd, char **line);
-
-#endif
+	d = (unsigned char*)dst;
+	s = (unsigned char*)src;
+	a = (unsigned char)c;
+	i = 0;
+	while (i < n)
+	{
+		y = (unsigned char)s[i];
+		d[i] = y;
+		i++;
+		if (y == a)
+		{
+			return (&dst[i]);
+		}
+	}
+	return (NULL);
+}

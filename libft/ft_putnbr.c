@@ -1,31 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/23 12:08:16 by lolivet           #+#    #+#             */
+/*   Updated: 2017/12/12 21:15:23 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+static void		ft_putmin(void)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	ft_putchar('-');
+	ft_putchar('2');
+}
 
-int				get_next_line(const int fd, char **line);
+void			ft_putnbr(int n)
+{
+	int		res;
+	int		modulo;
 
-#endif
+	if (n == -2147483648)
+	{
+		n = 147483648;
+		ft_putmin();
+	}
+	if (n < 0)
+	{
+		n = -n;
+		ft_putchar('-');
+	}
+	modulo = (n % 10);
+	res = (n / 10);
+	if (res != 0)
+	{
+		ft_putnbr(res);
+	}
+	ft_putchar(modulo + '0');
+}

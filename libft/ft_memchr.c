@@ -1,31 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/17 14:55:19 by lolivet           #+#    #+#             */
+/*   Updated: 2017/12/01 11:21:09 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+void	*ft_memchr(const void *s, int c, size_t n)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	unsigned char	i;
+	unsigned char	uc;
+	unsigned char	*str;
+	unsigned char	ustr;
+	void			*uv;
 
-int				get_next_line(const int fd, char **line);
-
-#endif
+	i = 0;
+	uc = (unsigned char)c;
+	str = (unsigned char*)s;
+	while (i < n)
+	{
+		ustr = (unsigned char)str[i];
+		if (ustr == uc)
+		{
+			uv = (void*)s;
+			return (uv + i);
+		}
+		i++;
+	}
+	return (NULL);
+}

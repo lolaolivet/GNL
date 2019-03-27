@@ -1,31 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_memalloc.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/21 17:59:48 by lolivet           #+#    #+#             */
+/*   Updated: 2017/12/12 21:14:33 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+void	*ft_memalloc(size_t size)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	size_t	*tmp;
+	size_t	i;
 
-int				get_next_line(const int fd, char **line);
-
-#endif
+	i = 0;
+	if (!size)
+		return (NULL);
+	tmp = (size_t*)malloc(sizeof(size_t) * size);
+	if (!tmp)
+		return (NULL);
+	while (tmp[i])
+	{
+		if (i <= size)
+		{
+			tmp[i] = 0;
+			i++;
+		}
+		else
+			return (NULL);
+	}
+	return (tmp);
+}

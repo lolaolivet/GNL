@@ -1,31 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/01/09 11:21:14 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/08 19:01:50 by lolivet          ###   ########.fr       */
+/*   Created: 2017/11/22 10:22:33 by lolivet           #+#    #+#             */
+/*   Updated: 2017/12/12 21:18:02 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# include <stdlib.h>
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct	s_gnl
+char	*ft_strmap(char const *s, char (*f)(char))
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
-	char		*tmp;
-}				t_gnl;
+	int		i;
+	int		k;
+	char	*tmp;
 
-int				get_next_line(const int fd, char **line);
-
-#endif
+	if (!s || !f)
+		return (NULL);
+	i = 0;
+	k = ft_strlen(s);
+	tmp = (char*)malloc(sizeof(char) * k + 1);
+	if (!tmp)
+		return (NULL);
+	while (s[i] != '\0')
+	{
+		tmp[i] = f(s[i]);
+		i++;
+	}
+	tmp[i] = '\0';
+	return (tmp);
+}

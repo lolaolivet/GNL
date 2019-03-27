@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_2.c                                  :+:      :+:    :+:   */
+/*   get_next_line_.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lolivet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/02/02 10:28:54 by lolivet           #+#    #+#             */
-/*   Updated: 2018/02/03 14:41:28 by lolivet          ###   ########.fr       */
+/*   Updated: 2018/02/08 18:30:39 by lolivet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 void	fill_rest(char **rest, char **ln, int i)
 {
 	char		*tmp;
-//	char		*tnt;
 
 	tmp = *rest;
 	while (tmp[i])
@@ -30,17 +29,11 @@ void	fill_rest(char **rest, char **ln, int i)
 		}
 		i++;
 	}
-// 19 fautes de moins
-//	tnt = *rest;
 	*rest = ft_strdup(tmp + i + 1);
-//	free(tmp);
-//	free(tnt);
 }
 
 int		check_rest(char **rest, char **line)
 {
-//	char	*tmp;
-
 	if (!(*rest))
 		return (0);
 	else if (*rest && ft_strchr(*rest, '\n'))
@@ -53,10 +46,8 @@ int		check_rest(char **rest, char **line)
 		if (*rest)
 		{
 			*line = ft_strdup(*rest);
-			// Ici 
 			free(*rest);
 			*rest = NULL;
-		//	*rest = ft_strnew(0);
 			return (1);
 		}
 		else
@@ -91,38 +82,33 @@ int		check_read(char **rest, int ret, char *buf, int j)
 	}
 }
 
-int		read_file(char **rest, char **line, int fd, int i)
+int		read_file(char **rest, char **ln, int fd, int i)
 {
-	int			ret;
-	int			j;
-	char		buf[BUFF_SIZE + 1];
 	int			return_read;
-	char		*tmp;
+	t_gnl		t;
 
-	j = 0;
-	tmp = NULL;
-	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
+	t.j = 0;
+	while ((t.ret = read(fd, t.buf, BUFF_SIZE)) > 0)
 	{
-		j = 1;
-		buf[ret] = '\0';
-		if (ft_strchr(buf, '\n'))
+		t.j = 1;
+		t.buf[t.ret] = '\0';
+		if (ft_strchr(t.buf, '\n'))
 		{
-			while (buf[i])
-				if (buf[i++] == '\n' && ((buf[i - 1] = '\0') + 1))
+			while (t.buf[i])
+				if (t.buf[i++] == '\n' && ((t.buf[i - 1] = '\0') + 1))
 				{
-					tmp = *line;
-					*line = *line  ? ft_strjoin(*line, buf) : ft_strdup(buf);
-					free(tmp);
+					t.tmp = *ln;
+					*ln = *ln ? ft_strjoin(*ln, t.buf) : ft_strdup(t.buf);
+					free(t.tmp);
 					break ;
 				}
 			break ;
 		}
-		tmp = *line;
-		*line = *line ? ft_strjoin(*line, buf) : ft_strdup(buf);
-		free(tmp);
+		t.tmp = *ln;
+		*ln = *ln ? ft_strjoin(*ln, t.buf) : ft_strdup(t.buf);
+		free(t.tmp);
 	}
-	return_read = check_read(rest, ret, buf + i, j);
-	return (return_read);
+	return ((return_read = check_read(rest, t.ret, t.buf + i, t.j)));
 }
 
 int		get_next_line(const int fd, char **line)
@@ -138,21 +124,15 @@ int		get_next_line(const int fd, char **line)
 	if (check == -1 || fd < 0 || (read = read_file(&rest, line, fd, 0)) == -1)
 	{
 		ft_strdel(line);
-		free(rest);
+		ft_strdel(&rest);
 		return (-1);
 	}
 	if (read == 1 || ((read == 0 && check == 1) && ft_strlen(*line)))
-	{
-// Pas de fautes dans FileCheck mais 354 leaks, 1 byte avec valgrind,
-//  0 leaks avec while(1)
-//		if (read == 0)
-//			free(rest);
 		return (1);
-	}
 	else
 	{
 		ft_strdel(line);
-		free(rest);
+		ft_strdel(&rest);
 		return (0);
 	}
 }
