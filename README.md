@@ -12,4 +12,5 @@ une fonction vous permettant de lire une ligne terminée par un retour à la lig
 un file descriptor, l’ajouter à votre libft si le coeur vous en dit, et surtout l’utiliser dans
 tous vos projets suivants qui en auront besoin.
 
+## Note
 106/100
